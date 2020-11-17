@@ -46,7 +46,8 @@ static gl_Matrix4 font_projection_mat;
  * @brief Stores the row information for a font.
  */
 typedef enum glFontState_e {
-   GL_FONT_STATE_ESCAPE = 0x1, /**< Interpreting an escape sequence (following '\\a'). */
+   GL_FONT_STATE_ESCAPE    = 0x1, /**< Interpreting an escape sequence (following '\\a'). */
+   GL_FONT_STATE_UNDERLINE = 0x2, /**< Underlining text. */
 } glFontState;
 
 
@@ -1235,6 +1236,7 @@ static const glColour* gl_fontGetColour( uint32_t ch )
        * Lowercase characters represent base colours.
        * Uppercase characters reperesent fancy game related colours.
        * Digits represent states.
+       * '_' (handled elsewhere) toggles underline.
        */
       /* Colours. */
       case 'r': col = &cFontRed; break;
@@ -1350,7 +1352,9 @@ static glFontState gl_fontRenderGlyph( glFontStash* stsh, uint32_t ch, const glC
       return state | GL_FONT_STATE_ESCAPE;
    }
    if (state & GL_FONT_STATE_ESCAPE) {
-      if (!forceColor) {
+      if (ch == '_')
+         state ^= GL_FONT_STATE_UNDERLINE;
+      else if (!forceColor) {
          col = gl_fontGetColour( ch );
          a   = (c==NULL) ? 1. : c->a;
          if (col == NULL) {
