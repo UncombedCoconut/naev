@@ -45,6 +45,14 @@ static gl_Matrix4 font_projection_mat;
 /**
  * @brief Stores the row information for a font.
  */
+typedef enum glFontState_e {
+   GL_FONT_STATE_ESCAPE = 0x1, /**< Interpreting an escape sequence (following '\\a'). */
+} glFontState;
+
+
+/**
+ * @brief Stores the row information for a font.
+ */
 typedef struct glFontRow_s {
    int x; /**< Current x offset. */
    int y; /**< Current y offset. */
@@ -147,7 +155,7 @@ static glFontGlyph* gl_fontGetGlyph( glFontStash *stsh, uint32_t ch );
  * when gl_fontRenderEnd() is called, saving lots of opengl calls.
  */
 static void gl_fontRenderStart( const glFontStash *stsh, double x, double y, const glColour *c );
-static int gl_fontRenderGlyph( glFontStash *stsh, uint32_t ch, const glColour *c, int state, int forceColor );
+static glFontState gl_fontRenderGlyph( glFontStash *stsh, uint32_t ch, const glColour *c, glFontState state, int forceColor );
 static void gl_fontRenderEnd (void);
 
 /*
@@ -606,7 +614,7 @@ static int gl_printRawBase( const glFont *ft_font,
 {
    (void) unused1;
    (void) unused2;
-   int s;
+   glFontState s;
    size_t i;
    uint32_t ch;
 
@@ -695,7 +703,7 @@ static int gl_printMaxRawBase( const glFont *ft_font,
       const glColour* c, const char *text, const int forceColor )
 {
    (void) unused;
-   int s;
+   glFontState s;
    size_t ret, i;
    uint32_t ch;
 
@@ -789,7 +797,8 @@ static int gl_printMidRawBase( const glFont *ft_font,
 {
    (void) unused;
    /*float h = ft_font->h / .63;*/ /* slightly increase fontsize */
-   int n, s;
+   int n;
+   glFontState s;
    size_t ret, i;
    uint32_t ch;
 
@@ -893,7 +902,8 @@ static int gl_printTextRawBase( const glFont *ft_font,
       double bx, double by,
       const glColour* c, const char *text, const int forceColor )
 {
-   int p, s;
+   int p;
+   glFontState s;
    double x,y;
    size_t i, ret;
    uint32_t ch;
@@ -1330,16 +1340,16 @@ static glFontGlyph* gl_fontGetGlyph( glFontStash *stsh, uint32_t ch )
 /**
  * @brief Renders a character.
  */
-static int gl_fontRenderGlyph( glFontStash* stsh, uint32_t ch, const glColour *c, int state, const int forceColor )
+static glFontState gl_fontRenderGlyph( glFontStash* stsh, uint32_t ch, const glColour *c, glFontState state, const int forceColor )
 {
    double a;
    const glColour *col;
 
    /* Handle escape sequences. */
    if (ch == '\a') {/* Start sequence. */
-      return 1;
+      return state | GL_FONT_STATE_ESCAPE;
    }
-   if (state == 1) {
+   if (state & GL_FONT_STATE_ESCAPE) {
       if (!forceColor) {
          col = gl_fontGetColour( ch );
          a   = (c==NULL) ? 1. : c->a;
@@ -1353,7 +1363,7 @@ static int gl_fontRenderGlyph( glFontStash* stsh, uint32_t ch, const glColour *c
             gl_uniformAColor(shaders.font.color, col, a);
          font_lastCol = col;
       }
-      return 0;
+      return state ^ GL_FONT_STATE_ESCAPE;
    }
 
    /* Unicode goes here.
@@ -1362,7 +1372,7 @@ static int gl_fontRenderGlyph( glFontStash* stsh, uint32_t ch, const glColour *c
    glyph = gl_fontGetGlyph( stsh, ch );
    if (glyph == NULL) {
       WARN(_("Unable to find glyph '%d'!"), ch );
-      return -1;
+      return state;
    }
 
    /* Activate texture. */
@@ -1377,7 +1387,7 @@ static int gl_fontRenderGlyph( glFontStash* stsh, uint32_t ch, const glColour *c
    font_projection_mat = gl_Matrix4_Translate( font_projection_mat,
          glyph->adv_x, glyph->adv_y, 0 );
 
-   return 0;
+   return state;
 }
 
 
