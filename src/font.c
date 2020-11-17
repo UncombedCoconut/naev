@@ -1387,6 +1387,16 @@ static glFontState gl_fontRenderGlyph( glFontStash* stsh, uint32_t ch, const glC
    /* Draw the element. */
    glDrawArrays( GL_TRIANGLE_STRIP, glyph->vbo_id, 4 );
 
+   if (state & GL_FONT_STATE_UNDERLINE) {
+      /* TODO: This is stupid; we really want a line at height stsh->face->underline_position/64.
+       * and thickness stsh->face->underline_thickness/64., as transformed by font_projection_mat. */
+      glyph = gl_fontGetGlyph( stsh, '_' );
+      if (glyph != NULL) {
+         glBindTexture(GL_TEXTURE_2D, glyph->tex->id);
+         glDrawArrays( GL_TRIANGLE_STRIP, glyph->vbo_id, 4 );
+      }
+   }
+
    /* Translate matrix. */
    font_projection_mat = gl_Matrix4_Translate( font_projection_mat,
          glyph->adv_x, glyph->adv_y, 0 );
