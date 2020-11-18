@@ -163,6 +163,7 @@ void conf_setDefaults (void)
    conf.font_size_intro   = 18;
    conf.font_size_def     = 12;
    conf.font_size_small   = 11;
+   conf.font_size_accel   = 9;
    conf.font_name_default = NULL;
    conf.font_name_monospace = NULL;
 
@@ -445,6 +446,7 @@ int conf_loadConfig ( const char* file )
       conf_loadInt( lEnv, "font_size_intro", conf.font_size_intro );
       conf_loadInt( lEnv, "font_size_def", conf.font_size_def );
       conf_loadInt( lEnv, "font_size_small", conf.font_size_small );
+      conf_loadInt( lEnv, "font_size_accel", conf.font_size_accel );
       conf_loadString( lEnv, "font_name_default", conf.font_name_default );
       conf_loadString( lEnv, "font_name_monospace", conf.font_name_monospace );
 
@@ -1074,6 +1076,7 @@ int conf_saveConfig ( const char* file )
    conf_saveInt("font_size_def",conf.font_size_def);
    conf_saveComment(_("Small size: 10"));
    conf_saveInt("font_size_small",conf.font_size_small);
+   conf_saveInt("font_size_accel",conf.font_size_accel);
    conf_saveComment(_("Default font to use: unset"));
    if (conf.font_name_default) {
       conf_saveString("font_name_default",conf.font_name_default);

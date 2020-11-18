@@ -134,6 +134,7 @@ typedef struct PlayerConf_s {
    int font_size_intro;   /**< Intro text font size. */
    int font_size_def;     /**< Default large font size. */
    int font_size_small;   /**< Default small font size. */
+   int font_size_accel;   /**< Default hotkey/accelerator font size. */
    char *font_name_default; /**< Default font filename. */
    char *font_name_monospace; /**< Monospace font filename. */
 

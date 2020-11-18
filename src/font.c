@@ -125,6 +125,7 @@ static glFontStash *avail_fonts = NULL;  /**< These are pointed to by the font s
 /* default font */
 glFont gl_defFont; /**< Default font. */
 glFont gl_smallFont; /**< Small font. */
+glFont gl_accelFont; /**< Button accelerator font. */
 glFont gl_defFontMono; /**< Default mono font. */
 
 

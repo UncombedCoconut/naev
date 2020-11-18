@@ -21,7 +21,6 @@ static int btn_key( Widget* btn, SDL_Keycode key, SDL_Keymod mod );
 static void btn_render( Widget* btn, double bx, double by );
 static void btn_cleanup( Widget* btn );
 static Widget* btn_get( const unsigned int wid, const char* name );
-static void btn_updateHotkey( Widget *btn );
 
 
 /**
@@ -65,10 +64,7 @@ void window_addButtonKey( const unsigned int wid,
    wgt->dat.btn.display    = strdup(display);
    wgt->dat.btn.disabled   = 0; /* initially enabled */
    wgt->dat.btn.fptr       = call;
-   if (key != 0) {
-      wgt->dat.btn.key = key;
-      btn_updateHotkey(wgt);
-   }
+   wgt->dat.btn.key = key;
 
    /* position/size */
    wgt->w = (double) w;
@@ -219,51 +215,6 @@ void window_buttonCaption( const unsigned int wid, const char *name, const char 
    if (wgt->dat.btn.display != NULL)
       free(wgt->dat.btn.display);
    wgt->dat.btn.display = strdup(display);
-
-   if (wgt->dat.btn.key != 0)
-      btn_updateHotkey(wgt);
-}
-
-
-/**
- * @brief Checks a button's hotkey against its label and highlights the hotkey, if present.
- */
-static void btn_updateHotkey( Widget *btn )
-{
-   char buf[PATH_MAX], *display, target;
-   const char *keyname;
-   size_t i;
-   int match;
-
-   keyname = SDL_GetKeyName(btn->dat.btn.key);
-   if (strlen(keyname) != 1) /* Only interested in single chars. */
-      return;
-
-   target = keyname[0];
-   if (!isalnum(target)) /* We filter to alpha numeric characters. */
-      return;
-   target = tolower(target);
-
-   /* Find first occurence in string. */
-   display  = btn->dat.btn.display;
-   match    = -1;
-   for (i=0; i<strlen(display); i++) {
-      if (tolower(display[i])==target) {
-         match = i;
-         break;
-      }
-   }
-   if (match < 0)
-      return;
-   target         = display[match]; /* Store character, can be uppercase. */
-   display[match] = '\0'; /* Cuts the string into two. */
-
-   /* Copy both parts and insert the character in the middle. */
-   nsnprintf( buf, sizeof(buf), "%s\aw%c\a0%s", display, target, &display[match+1] );
-
-   /* Should never be NULL. */
-   free(btn->dat.btn.display);
-   btn->dat.btn.display = strdup(buf);
 }
 
 
@@ -303,6 +254,7 @@ static void btn_render( Widget* btn, double bx, double by )
 {
    const glColour *c, *fc, *outline;
    double x, y;
+   const char *keyname;
 
    x = bx + btn->x;
    y = by + btn->y;
@@ -329,7 +281,6 @@ static void btn_render( Widget* btn, double bx, double by )
       }
    }
 
-
    toolkit_drawRect( x, y, btn->w, btn->h, c, NULL );
 
    /* inner outline */
@@ -341,6 +292,14 @@ static void btn_render( Widget* btn, double bx, double by )
          bx + btn->x,
          by + btn->y + (btn->h - gl_smallFont.h)/2.,
          fc, -1., btn->dat.btn.display );
+
+   if (btn->dat.btn.key != 0) {
+      keyname = SDL_GetKeyName(btn->dat.btn.key);
+      x = bx + btn->x + btn->w - 2;
+      y = by + btn->y + 2;
+      x -= gl_printWidthRaw( &gl_accelFont, keyname );
+      gl_printRaw( &gl_accelFont, x, y, &cFontGreen, -1., keyname );
+   }
 }
 
 

@@ -351,6 +351,7 @@ int main( int argc, char** argv )
    /* Have to set up fonts before rendering anything. */
    gl_fontInit( NULL, FONT_DEFAULT_PATH, conf.font_size_def ); /* initializes default font to size */
    gl_fontInit( &gl_smallFont, FONT_DEFAULT_PATH, conf.font_size_small ); /* small font */
+   gl_fontInit( &gl_accelFont, FONT_DEFAULT_PATH, conf.font_size_accel ); /* smaller hotkey/accelerator font */
    gl_fontInit( &gl_defFontMono, FONT_MONOSPACE_PATH, conf.font_size_def );
 
    /* Detect size changes that occurred after window creation. */
@@ -493,6 +494,7 @@ int main( int argc, char** argv )
    /* cleanup opengl fonts */
    gl_freeFont(NULL);
    gl_freeFont(&gl_smallFont);
+   gl_freeFont(&gl_accelFont);
    gl_freeFont(&gl_defFontMono);
 
    /* Close data. */

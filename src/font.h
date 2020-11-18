@@ -20,6 +20,7 @@ typedef struct glFont_s {
 } glFont;
 extern glFont gl_defFont; /**< Default font. */
 extern glFont gl_smallFont; /**< Small font. */
+extern glFont gl_accelFont; /**< Smaller hotkey/accelerator font. */
 extern glFont gl_defFontMono; /**< Default mono font. */
 
 
