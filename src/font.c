@@ -157,6 +157,7 @@ static glFontGlyph* gl_fontGetGlyph( glFontStash *stsh, uint32_t ch );
  */
 static void gl_fontRenderStart( const glFontStash *stsh, double x, double y, const glColour *c );
 static glFontState gl_fontRenderGlyph( glFontStash *stsh, uint32_t ch, const glColour *c, glFontState state, int forceColor );
+static void gl_fontRenderUnderline( glFontStash* stsh, glFontGlyph *glyph );
 static void gl_fontRenderEnd (void);
 
 /*
@@ -1383,25 +1384,39 @@ static glFontState gl_fontRenderGlyph( glFontStash* stsh, uint32_t ch, const glC
    glBindTexture(GL_TEXTURE_2D, glyph->tex->id);
 
    gl_Matrix4_Uniform(shaders.font.projection, font_projection_mat);
+   glUniform1i(shaders.font.drawing_glyph, 1);
 
    /* Draw the element. */
    glDrawArrays( GL_TRIANGLE_STRIP, glyph->vbo_id, 4 );
 
-   if (state & GL_FONT_STATE_UNDERLINE) {
-      /* TODO: This is stupid; we really want a line at height stsh->face->underline_position/64.
-       * and thickness stsh->face->underline_thickness/64., as transformed by font_projection_mat. */
-      glyph = gl_fontGetGlyph( stsh, '_' );
-      if (glyph != NULL) {
-         glBindTexture(GL_TEXTURE_2D, glyph->tex->id);
-         glDrawArrays( GL_TRIANGLE_STRIP, glyph->vbo_id, 4 );
-      }
-   }
+   if (state & GL_FONT_STATE_UNDERLINE)
+      gl_fontRenderUnderline( stsh, glyph );
 
    /* Translate matrix. */
    font_projection_mat = gl_Matrix4_Translate( font_projection_mat,
          glyph->adv_x, glyph->adv_y, 0 );
 
    return state;
+}
+
+
+/**
+ * @brief Lays out an underline beneath a glyph.
+ */
+static void gl_fontRenderUnderline( glFontStash* stsh, glFontGlyph *glyph )
+{
+   gl_Matrix4 projection;
+   double y1, y2, ty, my;
+   y1 = stsh->vbo_vert_data[2*glyph->vbo_id+1];
+   y2 = stsh->vbo_vert_data[2*glyph->vbo_id+7];
+   my = stsh->face->underline_thickness/64./(y2-y1);
+   ty = stsh->face->underline_position/64. - my*(y1+y2)/2.;
+   projection = font_projection_mat;
+   projection = gl_Matrix4_Translate(projection, 0, ty, 0);
+   projection = gl_Matrix4_Scale(projection, 1, my, 1);
+   gl_Matrix4_Uniform(shaders.font.projection, projection);
+   glUniform1i(shaders.font.drawing_glyph, 0);
+   glDrawArrays( GL_TRIANGLE_STRIP, glyph->vbo_id, 4 );
 }
 
 

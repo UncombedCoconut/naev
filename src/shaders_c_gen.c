@@ -70,7 +70,7 @@ const Shader shaders[] = {
       .vs_path = "font.vert",
       .fs_path = "font.frag",
       .attributes = {"vertex", "tex_coord"},
-      .uniforms = {"projection", "color"}
+      .uniforms = {"projection", "color",  "drawing_glyph"}
    },
    {
       .name = "beam",
