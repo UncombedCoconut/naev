@@ -29,8 +29,9 @@
 #include "nlua.h"
 #include "nlua_music.h"
 #include "nlua_var.h"
+#include "nopenal.h"
 #include "nstring.h"
-#include "sound_openal.h"
+#include "sound.h"
 
 
 #define MUSIC_SUFFIX       ".ogg" /**< Suffix of musics. */

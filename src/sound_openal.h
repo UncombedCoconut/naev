@@ -13,8 +13,6 @@
 #include "ncompat.h"
 #include "nopenal.h"
 
-#include <vorbis/vorbisfile.h>
-
 
 /**
  * @struct alSound
@@ -78,13 +76,6 @@ void voice_unlock (void);
 alVoice* voice_new (void);
 int voice_add( alVoice* v );
 alVoice* voice_get( int id );
-
-
-/*
- * Vorbis stuff.
- */
-extern ov_callbacks sound_al_ovcall;
-extern ov_callbacks sound_al_ovcall_noclose;
 
 
 /*

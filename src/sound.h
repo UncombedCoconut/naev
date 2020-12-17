@@ -7,6 +7,7 @@
 #ifndef SOUND_H
 #  define SOUND_H
 
+#include <vorbis/vorbisfile.h>
 
 #include "SDL_mutex.h"
 
@@ -73,6 +74,13 @@ int sound_env( SoundEnv_t env, double param );
 extern SDL_mutex *sound_lock; /**< Global sound lock, used for all OpenAL calls. */
 #define soundLock()        SDL_mutexP(sound_lock)
 #define soundUnlock()      SDL_mutexV(sound_lock)
+
+
+/*
+ * Vorbis stuff.
+ */
+extern ov_callbacks sound_al_ovcall;
+extern ov_callbacks sound_al_ovcall_noclose;
 
 
 #endif /* SOUND_H */
