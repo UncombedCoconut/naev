@@ -79,6 +79,10 @@
 #define ALC_EFX_MINOR_VERSION                              0x20002
 #define ALC_MAX_AUXILIARY_SENDS                            0x20003
 #endif
+
+/* Sources.  */
+extern ALuint music_source;
+
 /* Auxiliary Effect Slot. */
 extern ALvoid (AL_APIENTRY *nalGenAuxiliaryEffectSlots)(ALsizei,ALuint*);
 extern ALvoid (AL_APIENTRY *nalDeleteAuxiliaryEffectSlots)(ALsizei,ALuint*);

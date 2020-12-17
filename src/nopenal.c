@@ -3,6 +3,9 @@
  */
 #include "nopenal.h"
 
+/* Sources. */
+ALuint music_source                    = 0; /**< Source associated to music. */
+
 /* Auxiliary Effect Slot. */
 ALvoid (AL_APIENTRY *nalGenAuxiliaryEffectSlots)(ALsizei,ALuint*);
 ALvoid (AL_APIENTRY *nalDeleteAuxiliaryEffectSlots)(ALsizei,ALuint*);

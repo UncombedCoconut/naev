@@ -14,7 +14,7 @@
 #include "SDL_thread.h"
 #include "SDL_endian.h"
 
-#include "music_openal.h"
+#include "nopenal.h"
 #include "sound.h"
 #include "ndata.h"
 #include "log.h"
