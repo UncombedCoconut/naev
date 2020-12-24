@@ -56,9 +56,9 @@ static SDL_Keymod input_mod             = 0; /**< Current pressed modifier. */
 /*
  * default outline colours
  */
-const glColour* toolkit_colLight = &cGrey25; /**< Light outline colour. */
-const glColour* toolkit_col      = &cGrey20; /**< Normal outline colour. */
-const glColour* toolkit_colDark  = &cGrey10; /**< Dark outline colour. */
+const glColour* toolkit_colLight = &cBlack; /**< Light outline colour. */
+const glColour* toolkit_col      = &cBlack; /**< Normal outline colour. */
+const glColour* toolkit_colDark  = &cBlack; /**< Dark outline colour. */
 
 /*
  * Tab colors
