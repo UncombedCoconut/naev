@@ -29,6 +29,7 @@ The views and conclusions contained in the software and documentation are
 those of the authors and should not be interpreted as representing official
 policies, either expressed or implied, of the freetype-gl project.
  */
+
 /** @cond */
 #include <math.h>
 #include <float.h>
@@ -37,6 +38,26 @@ policies, either expressed or implied, of the freetype-gl project.
 /** @endcond */
 
 #include "edtaa3func.h"
+#include "log.h"
+
+static int tracing;
+void distfield_trace( int on ) { tracing = on; }
+
+static void write_csv(const char* name, const double* data, int width, int height)
+{
+   FILE *f = fopen(name, "w");
+   for (int y=0; y<height; y++) {
+      for (int x=0; x<width; x++) {
+         if (x)
+            fprintf(f, ",%f", data[y*width+x]);
+         else
+            fprintf(f, "%f", data[y*width+x]);
+      }
+      fprintf(f, "\n");
+   }
+   fclose(f);
+   LOG("Wrote %s", name);
+}
 
 double *
 make_distance_mapd( double *data, unsigned int width, unsigned int height )
@@ -53,6 +74,8 @@ make_distance_mapd( double *data, unsigned int width, unsigned int height )
     // Compute outside = edtaa3(bitmap); % Transform background (0's)
     computegradient( data, width, height, gx, gy);
     edtaa3(data, gx, gy, width, height, xdist, ydist, outside);
+    if (tracing)
+       write_csv("outside-raw.csv", outside, width, height);
     for( i=0; i<width*height; ++i)
         if( outside[i] < 0.0 )
             outside[i] = 0.0;
@@ -64,6 +87,8 @@ make_distance_mapd( double *data, unsigned int width, unsigned int height )
         data[i] = 1 - data[i];
     computegradient( data, width, height, gx, gy );
     edtaa3( data, gx, gy, width, height, xdist, ydist, inside );
+    if (tracing)
+       write_csv("inside-raw.csv", inside, width, height);
     for( i=0; i<width*height; ++i )
         if( inside[i] < 0 )
             inside[i] = 0.0;
@@ -160,6 +185,8 @@ make_distance_mapbf( unsigned char *img,
         data[i] = (img[i]-img_min)/img_max;
 
     data = make_distance_mapd(data, width, height);
+    if (tracing)
+       write_csv("inverted-distfield.csv", data, width, height);
 
     // lower to float
     for( i=0; i<width*height; ++i)

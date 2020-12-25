@@ -1121,7 +1121,11 @@ static int font_makeChar( glFontStash *stsh, font_char_t *c, uint32_t ch )
             for (u=0; u<w; u++)
                buffer[ (b+v)*rw+(b+u) ] = bitmap.buffer[ v*w+u ];
          /* Compute signed fdistance field with buffered glyph. */
+	 if (ch == 'S' && stsh->h == 11) {
+            distfield_trace(1);
+         }
          c->dataf = make_distance_mapbf( buffer, rw, rh );
+         distfield_trace(0);
          free( buffer );
       }
       c->w     = rw;
