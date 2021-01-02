@@ -1395,10 +1395,6 @@ static void weapon_createBolt( Weapon *w, const Outfit* outfit, double T,
 
    /* Calculate direction. */
    rdir += RNG_2SIGMA() * acc;
-   if (rdir < 0.)
-      rdir += 2.*M_PI;
-   else if (rdir >= 2.*M_PI)
-      rdir -= 2.*M_PI;
 
    mass = 1; /* Lasers are presumed to have unitary mass */
    v = *vel;
@@ -1452,15 +1448,9 @@ static void weapon_createAmmo( Weapon *w, const Outfit* launcher, double T,
 
    /* Launcher damage. */
    w->dam_mod *= parent->stats.launch_damage;
-   /*if (ammo->u.amm.accuracy != 0.) {
+   /*if (ammo->u.amm.accuracy != 0.)
       rdir += RNG_2SIGMA() * ammo->u.amm.accuracy/2. * 1./180.*M_PI;
-      if ((rdir > 2.*M_PI) || (rdir < 0.))
-         rdir = fmod(rdir, 2.*M_PI);
-   }*/
-   if (rdir < 0.)
-      rdir += 2.*M_PI;
-   else if (rdir >= 2.*M_PI)
-      rdir -= 2.*M_PI;
+   */
 
    /* If thrust is 0. we assume it starts out at speed. */
    v = *vel;
@@ -1569,10 +1559,6 @@ static Weapon* weapon_create( const Outfit* outfit, double T,
             }
          }
 
-         if (rdir < 0.)
-            rdir += 2.*M_PI;
-         else if (rdir >= 2.*M_PI)
-            rdir -= 2.*M_PI;
          mass = 1.; /**< Needs a mass. */
          w->solid = solid_create( mass, rdir, pos, vel, SOLID_UPDATE_EULER );
          w->think = think_beam;

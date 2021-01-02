@@ -19,36 +19,24 @@
 /*
  * M I S C
  */
-static double angle_cleanup( double a )
-{
-   double na;
-   if (FABS(a) >= 2.*M_PI) {
-      na = fmod(a, 2.*M_PI);
-      if (a < 0.)
-         na += 2.*M_PI;
-      return  na;
-   }
-   return a;
-}
+extern inline double angle_wrap( double a );
+
 /**
  * @brief Gets the difference between two angles.
  *
  *    @param ref Reference angle.
  *    @param a Angle to get distance from ref.
+ *    @return Angle difference, wrapped to the interval (-M_PI, M_PI].
  */
 double angle_diff( const double ref, double a )
 {
    double d;
-   double a1, a2;
 
    /* Get angles. */
-   a1 = angle_cleanup(ref);
-   a2 = angle_cleanup(a);
-   d  = a2 - a1;
+   d = angle_wrap( a - ref );
 
    /* Filter offsets. */
-   d  = (d < M_PI)  ? d : d - 2.*M_PI;
-   d  = (d > -M_PI) ? d : d + 2.*M_PI;
+   d  = (d <= M_PI) ? d : d - 2.*M_PI;
    return d;
 }
 
@@ -256,11 +244,7 @@ static void solid_update_euler (Solid *obj, const double dt)
    double cdir, sdir;
 
    /* make sure angle doesn't flip */
-   obj->dir += obj->dir_vel*dt;
-   if (obj->dir >= 2*M_PI)
-      obj->dir -= 2*M_PI;
-   if (obj->dir < 0.)
-      obj->dir += 2*M_PI;
+   obj->dir = angle_wrap( obj->dir + obj->dir_vel*dt );
 
    /* Initial positions. */
    px = obj->pos.x;
@@ -390,12 +374,7 @@ static void solid_update_rk4 (Solid *obj, const double dt)
    }
    vect_cset( &obj->vel, vx, vy );
    vect_cset( &obj->pos, px, py );
-
-   /* Validity check. */
-   if (obj->dir >= 2.*M_PI)
-      obj->dir -= 2.*M_PI;
-   else if (obj->dir < 0.)
-      obj->dir += 2.*M_PI;
+   obj->dir = angle_wrap( obj->dir );
 }
 
 
@@ -431,9 +410,7 @@ void solid_init( Solid* dest, const double mass, const double dir,
    dest->thrust  = 0.;
 
    /* Set direction. */
-   dest->dir = dir;
-   if ((dest->dir > 2.*M_PI) || (dest->dir < 0.))
-      dest->dir = fmod(dest->dir, 2.*M_PI);
+   dest->dir = angle_wrap( dir );
 
    /* Set velocity. */
    if (vel == NULL)

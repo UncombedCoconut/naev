@@ -827,8 +827,6 @@ static void equipment_renderShip( double bx, double by,
    dt   = (double)(tick - equipment_lastick)/1000.;
    equipment_lastick = tick;
    equipment_dir += p->turn * dt;
-   if (equipment_dir > 2*M_PI)
-      equipment_dir = fmod( equipment_dir, 2*M_PI );
    gl_getSpriteFromDir( &sx, &sy, p->ship->gfx_space, equipment_dir );
 
    /* Render ship graphic. */

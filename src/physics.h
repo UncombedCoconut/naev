@@ -26,6 +26,14 @@
 #define vect_odist(v)   MOD((v)->x,(v)->y) /**< Gets the distance of a vector from the origin. */
 #define vect_odist2(v)  ((v)->x*(v)->x+(v)->y*(v)->y) /**< Gets the squared distance of a vector from the origin. */
 
+/**
+ * @brief Returns the input wrapped to the interval [0, 2.*M_PI).
+ */
+inline double angle_wrap( double a )
+{
+   return (a<0 ? 2.*M_PI : 0) + fmod( a, 2.*M_PI );
+}
+
 /*
  * Update options.
  */

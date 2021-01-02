@@ -447,11 +447,6 @@ static int texL_spriteFromDir( lua_State *L )
       a = luaL_checknumber( L, 2 ) / 180. * M_PI;
 
    /* Calculate with parameter validity.. */
-   if ((a >= 2.*M_PI) || (a < 0.)) {
-      a = fmod( a, 2.*M_PI );
-      if (a < 0.)
-         a += 2.*M_PI;
-   }
    gl_getSpriteFromDir( &sx, &sy, tex, a );
 
    /* Return. */

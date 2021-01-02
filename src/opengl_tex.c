@@ -25,6 +25,7 @@
 #include "npng.h"
 #include "nstring.h"
 #include "opengl.h"
+#include "physics.h"
 
 
 /*
@@ -976,18 +977,11 @@ void gl_getSpriteFromDir( int* x, int* y, const glTexture* t, const double dir )
    int s, sx, sy;
    double shard, rdir;
 
-#ifdef DEBUGGING
-   if ((dir > 2.*M_PI) || (dir < 0.)) {
-      WARN(_("Angle not between 0 and 2.*M_PI [%f]."), dir);
-      return;
-   }
-#endif /* DEBUGGING */
-
    /* what each image represents in angle */
    shard = 2.*M_PI / (t->sy*t->sx);
 
    /* real dir is slightly moved downwards */
-   rdir = dir + shard/2.;
+   rdir = angle_wrap( dir ) + shard/2.;
 
    /* now calculate the sprite we need */
    s = (int)(rdir / shard);
